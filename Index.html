@@ -1,1 +1,119 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="site-title">Sarakari Brief</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-main">
 
+    <div id="disclaimer-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 hidden">
+        <div class="glass-morphism p-8 max-w-2xl mx-4 text-center">
+            <h2 class="text-2xl font-bold mb-4">Disclaimer / डिस्क्लेमर</h2>
+            <p id="disclaimer-text" class="text-sm overflow-y-auto max-h-60 mb-6 text-left">
+                </p>
+            <button onclick="closeDisclaimer()" class="btn-3d px-6 py-2 bg-blue-600 text-white rounded-lg">I Accept / मैं सहमत हूँ</button>
+        </div>
+    </div>
+
+    <header class="p-4 glass-morphism sticky top-0 z-40">
+        <div class="flex justify-between items-center mb-2">
+            <div id="weather-info" class="text-xs font-semibold">
+                <span id="ist-time"></span> | <span id="temp">Locating...</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <select id="lang-select" onchange="changeLanguage()" class="bg-transparent border rounded px-2 text-sm">
+                    <option value="hi">हिन्दी</option>
+                    <option value="en">English</option>
+                    </select>
+                <div id="help-center" class="cursor-pointer">
+                    <i class="fas fa-headset text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <h1 id="site-name" class="text-3xl font-bold tracking-tighter text-blue-900">Sarakari Brief</h1>
+            <p id="site-slogan" class="text-xs italic">आपकी सेवा, हमारा संकल्प</p>
+        </div>
+
+        <div class="mt-4 flex flex-col items-center">
+            <div class="relative w-full max-w-md">
+                <input type="text" id="ai-search" oninput="showSuggestions()" placeholder="सर्च सर्विसेज, सर्टिफिकेट्स, स्कीम्स" class="w-full p-2 pl-4 rounded-full border-none focus:ring-2 focus:ring-blue-400 glass-input text-sm">
+                <div id="suggestions" class="absolute w-full mt-1 bg-white/90 rounded-lg shadow-lg hidden z-50"></div>
+            </div>
+        </div>
+
+        <div class="mt-2 overflow-hidden h-6 bg-white/20 rounded flex items-center">
+            <div id="news-ticker" class="whitespace-nowrap animate-scroll text-xs font-bold text-red-700">
+                Aadhar Update Deadlines extended... New PM Kisan Installment Released... Apply for Voter ID online...
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4">
+        <div class="mb-6">
+            <select id="state-select" onchange="loadStatePage()" class="w-full p-3 glass-morphism rounded-xl font-bold">
+                <option value="all">चुनें अपना राज्य (Select State)</option>
+                <option value="UP">Uttar Pradesh</option>
+                <option value="RJ">Rajasthan</option>
+                <option value="MP">Madhya Pradesh</option>
+            </select>
+        </div>
+
+        <div id="service-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            </div>
+
+        <section class="mt-12 glass-morphism p-6 rounded-3xl" id="contact-us">
+            <h2 class="text-xl font-bold mb-4">Contact Us</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <form id="contact-form" class="space-y-4">
+                    <input type="text" placeholder="Name" class="w-full p-2 rounded glass-input">
+                    <input type="email" placeholder="Email" class="w-full p-2 rounded glass-input">
+                    <textarea placeholder="Message" class="w-full p-2 rounded glass-input"></textarea>
+                    <button class="btn-3d w-full py-2 bg-green-600 text-white rounded">Submit</button>
+                </form>
+                <div class="flex flex-wrap gap-4 justify-center items-center">
+                    <i class="fab fa-instagram text-3xl cursor-pointer"></i>
+                    <i class="fab fa-facebook text-3xl cursor-pointer"></i>
+                    <i class="fab fa-twitter text-3xl cursor-pointer"></i>
+                    <i class="fab fa-whatsapp text-3xl cursor-pointer"></i>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-12 p-8 glass-morphism text-center">
+        <div class="mb-4">
+            <button onclick="toggleAdmin()" class="text-xs text-gray-500 underline">Admin Access</button>
+        </div>
+        <p class="text-xs">&copy; 2026 Sarakari Brief. All Rights Reserved.</p>
+    </footer>
+
+    <div id="admin-panel" class="fixed inset-0 z-50 bg-white hidden overflow-y-auto p-6">
+        <button onclick="toggleAdmin()" class="float-right text-2xl">&times;</button>
+        <h2 class="text-2xl font-bold mb-6">Admin Dashboard</h2>
+        <div id="admin-auth" class="space-y-4 max-w-sm mx-auto">
+            <input type="password" id="admin-pass" placeholder="Enter Password" class="w-full p-2 border rounded">
+            <button onclick="loginAdmin()" class="w-full bg-blue-600 text-white py-2 rounded">Login</button>
+        </div>
+        <div id="admin-controls" class="hidden space-y-6">
+            <div>
+                <label>Website Name:</label>
+                <input type="text" id="edit-site-name" class="w-full p-2 border">
+            </div>
+            <div>
+                <label>Update Slogan:</label>
+                <input type="text" id="edit-slogan" class="w-full p-2 border">
+            </div>
+            <button onclick="saveAdminChanges()" class="bg-green-600 text-white px-6 py-2 rounded">Save Changes</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+      </html>
+              
