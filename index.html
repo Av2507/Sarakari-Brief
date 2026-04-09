@@ -3,117 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="site-title">Sarakari Brief</title>
+    <title>Sarakari Brief | आपकी सेवा, हमारा संकल्प</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flexsearch/dist/flexsearch.bundle.js"></script>
 </head>
-<body class="bg-main">
+<body class="bg-main-theme">
 
-    <div id="disclaimer-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 hidden">
-        <div class="glass-morphism p-8 max-w-2xl mx-4 text-center">
-            <h2 class="text-2xl font-bold mb-4">Disclaimer / डिस्क्लेमर</h2>
-            <p id="disclaimer-text" class="text-sm overflow-y-auto max-h-60 mb-6 text-left">
-                </p>
-            <button onclick="closeDisclaimer()" class="btn-3d px-6 py-2 bg-blue-600 text-white rounded-lg">I Accept / मैं सहमत हूँ</button>
+    <div id="disclaimer-popup" class="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4">
+        <div class="glass-card max-w-2xl w-full p-6 text-center animate-in">
+            <h2 class="text-2xl font-bold text-blue-900 mb-4">डिस्क्लेमर (Disclaimer)</h2>
+            <div class="h-64 overflow-y-auto text-sm text-left mb-6 pr-2 custom-scroll" id="disclaimer-content">
+                </div>
+            <button onclick="closeDisclaimer()" class="btn-3d bg-blue-700 text-white px-8 py-3 rounded-xl font-bold w-full">मैं सहमत हूँ / I Agree</button>
         </div>
     </div>
 
-    <header class="p-4 glass-morphism sticky top-0 z-40">
-        <div class="flex justify-between items-center mb-2">
-            <div id="weather-info" class="text-xs font-semibold">
-                <span id="ist-time"></span> | <span id="temp">Locating...</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <select id="lang-select" onchange="changeLanguage()" class="bg-transparent border rounded px-2 text-sm">
-                    <option value="hi">हिन्दी</option>
-                    <option value="en">English</option>
+    <header class="p-3 glass-nav sticky top-0 z-50">
+        <div class="container mx-auto flex flex-col items-center">
+            <div class="w-full flex justify-between items-center text-[10px] md:text-xs font-bold mb-2">
+                <div id="ist-clock" class="bg-white/50 px-2 py-1 rounded">IST: --:--:--</div>
+                <div id="weather-box" class="bg-blue-100/50 px-2 py-1 rounded cursor-pointer" onclick="getLocation()">
+                    <i class="fas fa-cloud-sun"></i> मौसम लोड हो रहा है...
+                </div>
+                <div class="flex items-center gap-2">
+                    <select id="lang-switch" onchange="changeLang(this.value)" class="bg-white/70 border-none rounded text-xs px-1 outline-none">
+                        <option value="hi">हिन्दी</option>
+                        <option value="en">English</option>
+                        <option value="bn">বাংলা</option>
+                        <option value="te">తెలుగు</option>
+                        <option value="mr">मराठी</option>
+                        <option value="ta">தமிழ்</option>
                     </select>
-                <div id="help-center" class="cursor-pointer">
-                    <i class="fas fa-headset text-xl"></i>
+                    <div id="help-icon" class="text-blue-900 text-lg cursor-pointer">
+                        <i class="fas fa-circle-question"></i>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="text-center">
-            <h1 id="site-name" class="text-3xl font-bold tracking-tighter text-blue-900">Sarakari Brief</h1>
-            <p id="site-slogan" class="text-xs italic">आपकी सेवा, हमारा संकल्प</p>
-        </div>
-
-        <div class="mt-4 flex flex-col items-center">
-            <div class="relative w-full max-w-md">
-                <input type="text" id="ai-search" oninput="showSuggestions()" placeholder="सर्च सर्विसेज, सर्टिफिकेट्स, स्कीम्स" class="w-full p-2 pl-4 rounded-full border-none focus:ring-2 focus:ring-blue-400 glass-input text-sm">
-                <div id="suggestions" class="absolute w-full mt-1 bg-white/90 rounded-lg shadow-lg hidden z-50"></div>
+            <h1 id="site-title-main" class="text-2xl md:text-3xl font-black text-blue-900 tracking-tighter">Sarakari Brief</h1>
+            
+            <div class="relative w-full max-w-md mt-3 group">
+                <input type="text" id="ai-search" 
+                    placeholder="सर्च सर्विसेज, सर्टिफिकेट्स, स्कीम्स" 
+                    class="w-full p-3 rounded-2xl glass-input text-sm focus:ring-4 focus:ring-blue-300 transition-all outline-none border-2 border-white/50"
+                    onkeyup="aiSearchSuggest(this.value)">
+                <div id="search-suggestions" class="absolute w-full mt-2 bg-white/95 rounded-xl shadow-2xl hidden z-[60] overflow-hidden border border-blue-100"></div>
             </div>
-        </div>
 
-        <div class="mt-2 overflow-hidden h-6 bg-white/20 rounded flex items-center">
-            <div id="news-ticker" class="whitespace-nowrap animate-scroll text-xs font-bold text-red-700">
-                Aadhar Update Deadlines extended... New PM Kisan Installment Released... Apply for Voter ID online...
+            <div class="w-full mt-3 h-8 bg-blue-900/10 rounded-lg overflow-hidden flex items-center">
+                <div class="bg-blue-900 text-white text-[10px] px-3 h-full flex items-center font-bold italic">UPDATES</div>
+                <div class="ticker-wrapper flex-1 overflow-hidden relative h-full">
+                    <div id="news-ticker" class="absolute whitespace-nowrap leading-8 text-xs font-bold text-red-600">
+                        • पैन को आधार से लिंक करने की अंतिम तिथि बढ़ी • पीएम किसान की 17वीं क़िस्त जारी • नए वोटर कार्ड के लिए आवेदन शुरू...
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="container mx-auto p-4">
+    <main class="container mx-auto p-4 pb-24">
         <div class="mb-6">
-            <select id="state-select" onchange="loadStatePage()" class="w-full p-3 glass-morphism rounded-xl font-bold">
-                <option value="all">चुनें अपना राज्य (Select State)</option>
-                <option value="UP">Uttar Pradesh</option>
-                <option value="RJ">Rajasthan</option>
-                <option value="MP">Madhya Pradesh</option>
+            <select id="state-select" onchange="switchState(this.value)" class="w-full p-4 glass-card rounded-2xl font-bold text-blue-900 border-2 border-white shadow-lg appearance-none outline-none">
+                <option value="central">चुनें अपना राज्य (Select Your State)</option>
+                <option value="up">Uttar Pradesh (उत्तर प्रदेश)</option>
+                <option value="rj">Rajasthan (राजस्थान)</option>
+                <option value="mp">Madhya Pradesh (मध्य प्रदेश)</option>
+                <option value="br">Bihar (बिहार)</option>
             </select>
         </div>
 
-        <div id="service-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div id="main-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
             </div>
 
-        <section class="mt-12 glass-morphism p-6 rounded-3xl" id="contact-us">
-            <h2 class="text-xl font-bold mb-4">Contact Us</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <form id="contact-form" class="space-y-4">
-                    <input type="text" placeholder="Name" class="w-full p-2 rounded glass-input">
-                    <input type="email" placeholder="Email" class="w-full p-2 rounded glass-input">
-                    <textarea placeholder="Message" class="w-full p-2 rounded glass-input"></textarea>
-                    <button class="btn-3d w-full py-2 bg-green-600 text-white rounded">Submit</button>
-                </form>
-                <div class="flex flex-wrap gap-4 justify-center items-center">
-                    <i class="fab fa-instagram text-3xl cursor-pointer"></i>
-                    <i class="fab fa-facebook text-3xl cursor-pointer"></i>
-                    <i class="fab fa-twitter text-3xl cursor-pointer"></i>
-                    <i class="fab fa-whatsapp text-3xl cursor-pointer"></i>
-                </div>
-            </div>
-        </section>
+        <div id="state-view" class="hidden animate-fade-in">
+            <button onclick="backToHome()" class="mb-4 text-blue-700 font-bold"><i class="fas fa-arrow-left"></i> होम पेज पर वापस</button>
+            <h2 id="state-heading" class="text-2xl font-bold mb-4">राज्य सेवाएं</h2>
+            <div id="state-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+        </div>
     </main>
 
-    <footer class="mt-12 p-8 glass-morphism text-center">
-        <div class="mb-4">
-            <button onclick="toggleAdmin()" class="text-xs text-gray-500 underline">Admin Access</button>
+    <footer class="p-8 glass-card mt-10 text-center space-y-4">
+        <div class="flex justify-center gap-6 text-2xl text-blue-900" id="footer-socials">
+            <i class="fab fa-instagram cursor-pointer hover:scale-110 transition"></i>
+            <i class="fab fa-facebook cursor-pointer hover:scale-110 transition"></i>
+            <i class="fab fa-x-twitter cursor-pointer hover:scale-110 transition"></i>
+            <i class="fab fa-whatsapp cursor-pointer hover:scale-110 transition"></i>
         </div>
-        <p class="text-xs">&copy; 2026 Sarakari Brief. All Rights Reserved.</p>
+        <p class="text-xs font-bold text-gray-500">© 2026 Sarakari Brief - आपकी सेवा, हमारा संकल्प</p>
+        <button onclick="openAdmin()" class="text-[10px] uppercase tracking-widest text-gray-400 hover:text-blue-900">Admin Login</button>
     </footer>
 
-    <div id="admin-panel" class="fixed inset-0 z-50 bg-white hidden overflow-y-auto p-6">
-        <button onclick="toggleAdmin()" class="float-right text-2xl">&times;</button>
-        <h2 class="text-2xl font-bold mb-6">Admin Dashboard</h2>
-        <div id="admin-auth" class="space-y-4 max-w-sm mx-auto">
-            <input type="password" id="admin-pass" placeholder="Enter Password" class="w-full p-2 border rounded">
-            <button onclick="loginAdmin()" class="w-full bg-blue-600 text-white py-2 rounded">Login</button>
-        </div>
-        <div id="admin-controls" class="hidden space-y-6">
-            <div>
-                <label>Website Name:</label>
-                <input type="text" id="edit-site-name" class="w-full p-2 border">
+    <div id="admin-modal" class="fixed inset-0 bg-white z-[200] hidden overflow-y-auto p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-black">Control Center</h2>
+                <button onclick="closeAdmin()" class="text-3xl">&times;</button>
             </div>
-            <div>
-                <label>Update Slogan:</label>
-                <input type="text" id="edit-slogan" class="w-full p-2 border">
+            
+            <div id="admin-login-step" class="max-w-sm mx-auto space-y-4 py-20">
+                <input type="password" id="admin-pass" placeholder="Password (2006)" class="w-full p-4 border-2 rounded-xl outline-none">
+                <button onclick="verifyAdmin()" class="w-full bg-black text-white py-4 rounded-xl font-bold">Verify Identity</button>
             </div>
-            <button onclick="saveAdminChanges()" class="bg-green-600 text-white px-6 py-2 rounded">Save Changes</button>
+
+            <div id="admin-dashboard" class="hidden space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-gray-50 rounded-2xl border">
+                        <h3 class="font-bold mb-4">Website Basics</h3>
+                        <input type="text" id="cfg-name" placeholder="Site Name" class="w-full p-2 mb-2 border rounded">
+                        <input type="text" id="cfg-slogan" placeholder="Slogan" class="w-full p-2 mb-2 border rounded">
+                    </div>
+                    <div class="p-6 bg-gray-50 rounded-2xl border">
+                        <h3 class="font-bold mb-4">Add New Service</h3>
+                        <input type="text" id="new-srv-name" placeholder="Service Name" class="w-full p-2 mb-2 border rounded">
+                        <input type="text" id="new-srv-link" placeholder="Official Link" class="w-full p-2 mb-2 border rounded">
+                        <button onclick="addNewService()" class="bg-blue-600 text-white px-4 py-2 rounded">Add Button</button>
+                    </div>
+                </div>
+                <button onclick="saveAllSettings()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold">SAVE ALL UPDATES</button>
+            </div>
         </div>
     </div>
 
     <script src="script.js"></script>
 </body>
-      </html>
-              
+                            </html>
+                
