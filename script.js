@@ -167,4 +167,4 @@ function backToHome() {
 
 function toggleAdmin() { document.getElementById('admin-panel').classList.toggle('hidden'); }
 function closeDisclaimer() { document.getElementById('disclaimer-modal').classList.add('hidden'); }
-        
+                                             
