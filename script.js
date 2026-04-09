@@ -1,111 +1,85 @@
-const services = [
-    { id: 1, name: "आधार कार्ड", icon: "fa-id-card", color: "bg-blue-100", links: [
-        { title: "ऑर्डर प्लास्टिक आधार", url: "https://myaadhaar.uidai.gov.in/" },
-        { title: "E- आधार डाउनलोड", url: "https://myaadhaar.uidai.gov.in/genricDownloadAadhaar/en" }
-    ]},
-    { id: 2, name: "पैन कार्ड", icon: "fa-address-card", color: "bg-orange-100", links: [] },
-    { id: 3, name: "किसान", icon: "fa-tractor", color: "bg-green-100", links: [] },
-    // 22 services structure...
-];
-
-const disclaimerText = `
-यह वेबसाइट एक निजी पोर्टल है... (Full Disclaimer text from your prompt)
-`;
+// Database Simulation
+let siteData = {
+    name: "Sarakari Brief",
+    slogan: "आपकी सेवा, हमारा संकल्प",
+    mainServices: [
+        { name: "आधार कार्ड", icon: "fa-id-card", color: "#e3f2fd", links: ["https://uidai.gov.in"] },
+        { name: "पैन कार्ड", icon: "fa-address-card", color: "#fff3e0", links: ["https://onlineservices.nsdl.com"] },
+        { name: "वोटर कार्ड", icon: "fa-users", color: "#f3e5f5", links: ["https://voters.eci.gov.in"] },
+        { name: "ड्राइविंग लाइसेंस", icon: "fa-car", color: "#e8f5e9", links: ["https://parivahan.gov.in"] },
+        { name: "पीएम किसान", icon: "fa-tractor", color: "#f1f8e9", links: ["https://pmkisan.gov.in"] }
+    ]
+};
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    loadServices();
-    startTime();
-    fetchWeather();
-    showPopup();
-});
+window.onload = () => {
+    renderUI();
+    updateClock();
+    setInterval(updateClock, 1000);
+    loadDisclaimer();
+};
 
-function loadServices() {
-    const grid = document.getElementById('service-grid');
-    grid.innerHTML = services.map(s => `
-        <div class="btn-3d glass-morphism ${s.color}" onclick="openSubPage(${s.id})">
-            <i class="fas ${s.icon} text-3xl mb-2 text-blue-700"></i>
-            <span>${s.name}</span>
+function renderUI() {
+    const grid = document.getElementById('main-grid');
+    grid.innerHTML = siteData.mainServices.map(srv => `
+        <div class="btn-3d glass-card" style="background: ${srv.color}" onclick="window.open('${srv.links[0]}', '_blank')">
+            <i class="fas ${srv.icon} text-blue-900"></i>
+            <span class="text-xs font-black uppercase tracking-tighter">${srv.name}</span>
+            <span class="text-[8px] mt-2 bg-white/50 px-2 rounded">Check Official Site</span>
         </div>
     `).join('');
 }
 
-function openSubPage(id) {
-    const service = services.find(s => s.id === id);
-    // Dynamic sub-page creation logic here
-    alert("Opening sub-page for: " + service.name);
-}
-
-// AI Search Suggestion Logic
-function showSuggestions() {
-    const input = document.getElementById('ai-search').value.toLowerCase();
-    const suggestionsBox = document.getElementById('suggestions');
-    if (input.length < 2) {
-        suggestionsBox.classList.add('hidden');
-        return;
-    }
+// AI Search (Simple fuzzy logic simulation)
+function aiSearchSuggest(val) {
+    const box = document.getElementById('search-suggestions');
+    if (val.length < 2) { box.classList.add('hidden'); return; }
     
-    const matches = services.filter(s => s.name.toLowerCase().includes(input));
-    if (matches.length > 0) {
-        suggestionsBox.innerHTML = matches.map(m => `
-            <div class="p-2 hover:bg-gray-100 cursor-pointer" onclick="openSubPage(${m.id})">
-                ${m.name}
+    const results = siteData.mainServices.filter(s => 
+        s.name.toLowerCase().includes(val.toLowerCase())
+    );
+
+    if (results.length > 0) {
+        box.innerHTML = results.map(r => `
+            <div class="p-3 hover:bg-blue-50 cursor-pointer text-sm font-bold border-b" onclick="window.open('${r.links[0]}')">
+                <i class="fas ${r.icon} mr-2"></i> ${r.name}
             </div>
         `).join('');
-        suggestionsBox.classList.remove('hidden');
+        box.classList.remove('hidden');
+    } else {
+        box.innerHTML = `<div class="p-3 text-xs italic">कोई सेवा नहीं मिली...</div>`;
     }
 }
 
-// Weather & Time
-function startTime() {
-    const today = new Date();
-    document.getElementById('ist-time').innerHTML = today.toLocaleTimeString('en-IN');
-    setTimeout(startTime, 1000);
-}
-
-async function fetchWeather() {
-    // Note: In real app, use navigator.geolocation
-    try {
-        const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=28.61&longitude=77.23&current_weather=true');
-        const data = await response.json();
-        document.getElementById('temp').innerText = data.current_weather.temperature + "°C Delhi";
-    } catch (e) {
-        document.getElementById('temp').innerText = "28°C";
-    }
-}
-
-// Disclaimer Popup
-function showPopup() {
-    document.getElementById('disclaimer-modal').classList.remove('hidden');
-    document.getElementById('disclaimer-text').innerText = disclaimerText;
-}
-
-function closeDisclaimer() {
-    document.getElementById('disclaimer-modal').classList.add('hidden');
+// IST Clock
+function updateClock() {
+    const now = new Date();
+    document.getElementById('ist-clock').innerText = "IST: " + now.toLocaleTimeString('en-IN');
 }
 
 // Admin Logic
-function toggleAdmin() {
-    const panel = document.getElementById('admin-panel');
-    panel.classList.toggle('hidden');
+function openAdmin() { document.getElementById('admin-modal').classList.remove('hidden'); }
+function closeAdmin() { document.getElementById('admin-modal').classList.add('hidden'); }
+
+function verifyAdmin() {
+    const p = document.getElementById('admin-pass').value;
+    if (p === "2006") {
+        document.getElementById('admin-login-step').classList.add('hidden');
+        document.getElementById('admin-dashboard').classList.remove('hidden');
+    } else { alert("गलत पासवर्ड!"); }
 }
 
-function loginAdmin() {
-    const pass = document.getElementById('admin-pass').value;
-    if (pass === "2006") {
-        document.getElementById('admin-auth').classList.add('hidden');
-        document.getElementById('admin-controls').classList.remove('hidden');
-    } else {
-        alert("Wrong Password");
-    }
+function loadDisclaimer() {
+    document.getElementById('disclaimer-content').innerText = `सूचना का अधिकार और जिम्मेदारी... (आपका पूरा टेक्स्ट यहाँ आएगा)`;
 }
 
-function saveAdminChanges() {
-    const newName = document.getElementById('edit-site-name').value;
-    if (newName) {
-        document.getElementById('site-name').innerText = newName;
-        localStorage.setItem('siteName', newName);
-    }
-    toggleAdmin();
-                                                                             }
-      
+function closeDisclaimer() {
+    document.getElementById('disclaimer-popup').classList.add('hidden');
+}
+
+function switchState(val) {
+    if(val === 'central') return;
+    alert(val.toUpperCase() + " के लिए पोर्टल लोड हो रहा है...");
+    // यहाँ आप state-view को शो और main-grid को हाइड करने का लॉजिक डाल सकते हैं
+         }
+         
