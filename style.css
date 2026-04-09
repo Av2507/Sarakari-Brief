@@ -1,89 +1,59 @@
-:root {
-    --glass: rgba(255, 255, 255, 0.5);
-    --glass-border: rgba(255, 255, 255, 0.3);
-}
-
-body {
-    background: linear-gradient(135deg, #ff993315, #ffffff, #13880815);
-    background-attachment: fixed;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    color: #1a1a1a;
-}
-
-.glass-card {
-    background: var(--glass);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+/* Glassmorphism & Themes */
+.glass-morphism {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .glass-nav {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--glass-border);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-.glass-input {
-    background: rgba(255, 255, 255, 0.9);
+.glass-input { background: rgba(255, 255, 255, 0.9); }
+
+body {
+    background: linear-gradient(135deg, #f0f7ff, #ffffff, #f0fff4);
+    background-attachment: fixed;
 }
 
-/* 3D Dynamic Buttons */
+/* 3D Button Animation */
 .btn-3d {
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    transform-style: preserve-3d;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem 1rem;
-    border-radius: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    box-shadow: 0 10px 0 rgba(0,0,0,0.05);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: translateY(0);
+    box-shadow: 0 8px 0 rgba(0,0,0,0.05);
+    border: 1px solid rgba(255,255,255,0.4);
 }
 
 .btn-3d:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.1);
 }
 
 .btn-3d:active {
-    transform: translateY(4px);
+    transform: translateY(3px);
     box-shadow: 0 2px 0 rgba(0,0,0,0.05);
 }
 
-.btn-3d i {
-    font-size: 2rem;
-    margin-bottom: 0.75rem;
-    transition: transform 0.3s;
-}
-
-.btn-3d:hover i {
-    transform: scale(1.2) rotate(5deg);
-}
-
-/* Ticker Animation */
+/* Ticker */
 @keyframes ticker {
     0% { transform: translateX(100%); }
     100% { transform: translateX(-150%); }
 }
+.animate-ticker { animation: ticker 25s linear infinite; }
 
-#news-ticker {
-    animation: ticker 25s linear infinite;
+/* Sub-page Animations */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
 }
-
-/* Page Background Overlays */
-.bg-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    z-index: -1;
-    opacity: 0.15;
-    filter: blur(50px);
-    pointer-events: none;
-}
+.animate-slide-up { animation: slideUp 0.4s ease-out forwards; }
 
 .custom-scroll::-webkit-scrollbar { width: 4px; }
-.custom-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
-        
+.custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+/* Background Overlays for Categories */
+.theme-farmer { background: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.8)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80') center/cover; }
+.theme-tech { background: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.8)), url('https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1000&q=80') center/cover; }
